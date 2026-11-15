@@ -1,0 +1,21 @@
+# Environment and secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# FastF1 cache (downloaded data)
+cache/
+
+# PostgreSQL log
+pg_server.log
+
+# Editors
+.vscode/
+.idea/
+~$*
+thesis/finalize.log
+thesis/*.export.pdf

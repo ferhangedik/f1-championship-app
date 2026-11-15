@@ -1,0 +1,8 @@
+# F1 Championship Data Analysis - Python dependencies
+# Install: python -m pip install -r requirements.txt
+
+Flask>=3.0,<4.0            # Web framework
+psycopg[binary]>=3.2      # PostgreSQL driver (psycopg v3, the current generation; not psycopg2)
+Werkzeug>=3.0             # Password hashing (generate/check_password_hash) and WSGI helpers
+python-dotenv>=1.0        # Loads environment variables from the .env file
+fastf1>=3.4              # Real Formula 1 data (telemetry, results) - used by data_loader.py
