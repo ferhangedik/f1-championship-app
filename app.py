@@ -24,6 +24,10 @@ def create_app():
     # Bind the database teardown hook
     db.init_app(app)
 
+    # Register blueprints
+    from routes.drivers import bp as drivers_bp
+    app.register_blueprint(drivers_bp)
+
     # Every POST request must carry the session's anti-CSRF token
     app.before_request(check_csrf)
 
@@ -36,12 +40,6 @@ def create_app():
             "current_year": date.today().year,
             "csrf_token": csrf_token,
         }
-
-    # Temporary test page: proves that Flask can read the database -- REMOVE THAT AFTER TEST !!!!
-    @app.route("/")
-    def index():
-        row = db.query("SELECT COUNT(*) AS n FROM hfg_drivers", one=True)
-        return f"F1 app is running. Drivers in the database: {row['n']}"
 
     return app
 

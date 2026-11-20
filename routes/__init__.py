@@ -1,0 +1,1 @@
+# routes package — each page group is defined in its own Blueprint.

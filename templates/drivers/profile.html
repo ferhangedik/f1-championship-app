@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}{{ driver.first_name }} {{ driver.last_name }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Info card -->
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body text-center">
+        {% if driver.photo_url %}
+          <img src="{{ driver.photo_url }}" alt="{{ driver.last_name }}" class="driver-photo mb-3"
+               onerror="this.style.display='none'">
+        {% else %}
+          <i class="bi bi-person-circle mb-3" style="font-size:5rem;color:var(--f1-red)"></i>
+        {% endif %}
+        <h2 class="fw-bold mb-1">{{ driver.first_name }} {{ driver.last_name }}</h2>
+        <div class="text-muted mb-3">{{ driver.team or 'No team' }}</div>
+        <ul class="list-group list-group-flush text-start">
+          <li class="list-group-item bg-transparent text-light d-flex justify-content-between">
+            <span class="text-muted">Nationality</span><span>{{ driver.nationality or '—' }}</span></li>
+          <li class="list-group-item bg-transparent text-light d-flex justify-content-between">
+            <span class="text-muted">Date of Birth</span><span>{{ driver.date_of_birth.strftime('%d.%m.%Y') if driver.date_of_birth else '—' }}</span></li>
+          {% if driver.wiki_url %}
+          <li class="list-group-item bg-transparent d-flex justify-content-between">
+            <span class="text-muted">Wikipedia</span><a href="{{ driver.wiki_url }}" target="_blank">Open <i class="bi bi-box-arrow-up-right"></i></a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics + chart -->
+  <div class="col-lg-8">
+    <div class="row g-3 mb-3">
+      {% set cards = [('Races', stats.races), ('Wins', stats.wins), ('Podiums', stats.podiums), ('Poles', stats.poles), ('Total Points', '%g'|format(stats.points))] %}
+      {% for label, val in cards %}
+      <div class="col">
+        <div class="card stat-card h-100">
+          <div class="card-body py-3">
+            <div class="stat-value">{{ val }}</div>
+            <div class="stat-label">{{ label }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-graph-up text-f1"></i> Season Performance</span>
+        <form method="get" class="m-0">
+          <select name="season" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+            {% for s in seasons %}
+              <option value="{{ s.season_id }}" {% if season and s.season_id==season.season_id %}selected{% endif %}>{{ s.year }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+      <div class="card-body">
+        {% if labels %}
+          <div class="chart-wrap"><canvas id="progressChart"></canvas></div>
+        {% else %}
+          <p class="text-muted mb-0">No data for this season.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if labels %}
+<script>
+const labels = {{ labels|tojson }};
+const points = {{ points|tojson }};
+const cumulative = {{ cumulative|tojson }};
+new Chart(document.getElementById('progressChart'), {
+  data: {
+    labels: labels,
+    datasets: [
+      { type: 'bar', label: 'Race Points', data: points,
+        backgroundColor: 'rgba(225,6,0,0.65)', borderColor: '#e10600', yAxisID: 'y' },
+      { type: 'line', label: 'Cumulative Points', data: cumulative,
+        borderColor: '#38bdf8', backgroundColor: '#38bdf8', tension: .25, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#e8e8ea' } } },
+    scales: {
+      x: { ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' } },
+      y:  { position: 'left',  ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' }, title: { display: true, text: 'Race points', color: '#9a9aa8' } },
+      y1: { position: 'right', ticks: { color: '#9a9aa8' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Cumulative', color: '#9a9aa8' } }
+    }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

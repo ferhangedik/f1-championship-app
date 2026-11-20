@@ -1,0 +1,155 @@
+/* =========================================================================
+   F1 Championship Data Analysis - Application styles
+   Dark theme + Formula 1 red (#e10600) accent colour. -- AI helped.
+   ========================================================================= */
+
+:root {
+    --f1-red: #e10600;
+    --f1-red-dark: #b30500;
+    --f1-dark: #15151e;
+    --f1-darker: #0d0d12;
+    --f1-card: #1f1f2b;
+    --f1-border: #2c2c3a;
+    --f1-text: #e8e8ea;
+    --f1-muted: #9a9aa8;
+}
+
+body {
+    background-color: var(--f1-dark);
+    color: var(--f1-text);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main { flex: 1 0 auto; }
+
+/* --- Navbar --- */
+.f1-navbar {
+    background: linear-gradient(90deg, var(--f1-darker) 0%, #1a1a24 100%);
+    border-bottom: 3px solid var(--f1-red);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+.f1-logo {
+    background: var(--f1-red);
+    color: #fff;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.navbar-dark .nav-link { color: var(--f1-text) !important; transition: color .15s; }
+.navbar-dark .nav-link:hover { color: var(--f1-red) !important; }
+
+/* --- Cards / panels --- */
+.card {
+    background-color: var(--f1-card);
+    border: 1px solid var(--f1-border);
+    border-radius: 10px;
+    color: var(--f1-text);
+}
+.card-header {
+    background-color: rgba(225, 6, 0, 0.08);
+    border-bottom: 1px solid var(--f1-border);
+    font-weight: 600;
+}
+.stat-card {
+    background: linear-gradient(135deg, var(--f1-card), #26263400);
+    border-left: 4px solid var(--f1-red);
+}
+.stat-card .stat-value { font-size: 2rem; font-weight: 800; }
+.stat-card .stat-label { color: var(--f1-muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .5px; }
+
+/* --- Tables --- */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--f1-text);
+    --bs-table-border-color: var(--f1-border);
+}
+.table > :not(caption) > * > * { background-color: transparent; color: var(--f1-text); }
+.table thead th {
+    background-color: var(--f1-darker);
+    color: var(--f1-muted);
+    text-transform: uppercase;
+    font-size: .78rem;
+    letter-spacing: .5px;
+    border-bottom: 2px solid var(--f1-red);
+}
+.table-hover > tbody > tr:hover > * { background-color: rgba(225, 6, 0, 0.06); }
+.pos-badge {
+    display: inline-block;
+    min-width: 28px;
+    text-align: center;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+.pos-1 { background: #ffd700; color: #000; }
+.pos-2 { background: #c0c0c0; color: #000; }
+.pos-3 { background: #cd7f32; color: #000; }
+
+/* --- Buttons --- */
+.btn-f1 {
+    background-color: var(--f1-red);
+    border-color: var(--f1-red);
+    color: #fff;
+    font-weight: 600;
+}
+.btn-f1:hover { background-color: var(--f1-red-dark); border-color: var(--f1-red-dark); color: #fff; }
+.btn-outline-f1 { color: var(--f1-red); border-color: var(--f1-red); }
+.btn-outline-f1:hover { background-color: var(--f1-red); color: #fff; }
+
+/* --- Forms --- */
+.form-control, .form-select {
+    background-color: var(--f1-darker);
+    border: 1px solid var(--f1-border);
+    color: var(--f1-text);
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--f1-darker);
+    color: var(--f1-text);
+    border-color: var(--f1-red);
+    box-shadow: 0 0 0 .2rem rgba(225, 6, 0, 0.25);
+}
+.form-select option { background-color: var(--f1-darker); }
+
+/* --- Page title --- */
+.page-title {
+    border-left: 5px solid var(--f1-red);
+    padding-left: 14px;
+    margin-bottom: 1.5rem;
+}
+.page-title h1 { font-weight: 800; margin: 0; }
+
+/* --- Countdown --- */
+.countdown-box {
+    background: var(--f1-card);
+    border: 1px solid var(--f1-border);
+    border-radius: 10px;
+    padding: 18px 10px;
+    min-width: 90px;
+}
+.countdown-box .num { font-size: 2.4rem; font-weight: 800; color: var(--f1-red); line-height: 1; }
+.countdown-box .lbl { color: var(--f1-muted); font-size: .8rem; text-transform: uppercase; }
+
+/* --- Misc --- */
+/* Bootstrap's default .text-muted colour is unreadable on the dark theme; override it */
+.text-muted { color: var(--f1-muted) !important; }
+.text-secondary { color: var(--f1-muted) !important; }
+.list-group-item { background-color: transparent; border-color: var(--f1-border); }
+.nav-tabs { border-bottom-color: var(--f1-border); }
+.nav-tabs .nav-link { color: var(--f1-muted); }
+.nav-tabs .nav-link:hover { border-color: var(--f1-border); color: var(--f1-text); }
+.nav-tabs .nav-link.active { background-color: var(--f1-card); color: #fff; border-color: var(--f1-border) var(--f1-border) var(--f1-card); }
+.text-f1 { color: var(--f1-red) !important; }
+.bg-f1 { background-color: var(--f1-red) !important; }
+a { color: #ff5a54; text-decoration: none; }
+a:hover { color: var(--f1-red); }
+.f1-footer { background: var(--f1-darker); border-top: 3px solid var(--f1-red); }
+.badge-fl { background: #a855f7; color: #fff; }   /* fastest lap (purple) */
+.chart-wrap { position: relative; height: 340px; }
+.driver-photo {
+    width: 120px; height: 120px; object-fit: cover;
+    border-radius: 50%; border: 3px solid var(--f1-red); background: var(--f1-darker);
+}

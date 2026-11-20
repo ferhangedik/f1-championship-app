@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}F1 Analytics{% endblock %} · F1 Championship Data Analysis</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+
+  <!-- Bootstrap 5 (local copy in static/vendor) -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+  <!-- Application styles -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <!-- Chart.js (local copy) -->
+  <script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark f1-navbar sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{{ url_for('drivers.index') }}">
+      <span class="f1-logo">F1</span> Analytics
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='drivers' }}" href="{{ url_for('drivers.index') }}"><i class="bi bi-person"></i> Drivers</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="f1-footer text-center py-4 mt-5">
+  <div class="container">
+    <p class="mb-1"><span class="f1-logo">F1</span> Championship Data Analysis</p>
+    <small class="text-muted">
+      Engineering Diploma Project &middot; Flask + PostgreSQL &middot; {{ current_year }}
+      <br>Data sources: FastF1 and the Jolpica-F1 (Ergast) API (unofficial open data). For educational purposes.
+    </small>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
