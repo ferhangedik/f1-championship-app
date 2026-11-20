@@ -171,3 +171,4 @@ CREATE INDEX IF NOT EXISTS hfg_idx_races_circuit   ON hfg_races(circuit_id);
 CREATE INDEX IF NOT EXISTS hfg_idx_drivers_team    ON hfg_drivers(team_id);
 CREATE INDEX IF NOT EXISTS hfg_idx_reviews_race    ON hfg_reviews(race_id);
 CREATE INDEX IF NOT EXISTS hfg_idx_audit_driver    ON hfg_driver_audit(driver_id);
+
