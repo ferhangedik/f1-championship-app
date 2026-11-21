@@ -25,8 +25,12 @@ def create_app():
     db.init_app(app)
 
     # Register blueprints
+    from routes.standings import bp as standings_bp
     from routes.drivers import bp as drivers_bp
+    app.register_blueprint(standings_bp)
     app.register_blueprint(drivers_bp)
+
+
 
     # Every POST request must carry the session's anti-CSRF token
     app.before_request(check_csrf)

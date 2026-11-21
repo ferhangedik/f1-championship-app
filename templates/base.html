@@ -26,6 +26,7 @@
     </button>
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='standings' }}" href="{{ url_for('standings.index') }}"><i class="bi bi-trophy"></i> Standings</a></li>
         <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='drivers' }}" href="{{ url_for('drivers.index') }}"><i class="bi bi-person"></i> Drivers</a></li>
       </ul>
     </div>

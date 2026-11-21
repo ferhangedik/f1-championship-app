@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Championship Standings{% endblock %}
+
+{% macro pos_badge(p) %}
+  <span class="pos-badge {% if p==1 %}pos-1{% elif p==2 %}pos-2{% elif p==3 %}pos-3{% endif %}">{{ p }}</span>
+{% endmacro %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+  <div class="page-title"><h1><i class="bi bi-trophy text-f1"></i> Championship Standings</h1></div>
+  <form method="get" class="d-flex align-items-center gap-2">
+    <label class="text-muted small mb-0">Season:</label>
+    <select name="season" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+      {% for s in seasons %}
+        <option value="{{ s.season_id }}" {% if season and s.season_id==season.season_id %}selected{% endif %}>{{ s.year }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if not season %}
+  <div class="alert alert-warning">No season data yet.</div>
+{% else %}
+<div class="row g-4">
+  <!-- Drivers' Championship -->
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-person-badge"></i> Drivers' Championship — {{ season.year }}</div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>#</th><th>Driver</th><th>Team</th><th class="text-end">Wins</th><th class="text-end">Podiums</th><th class="text-end">Points</th></tr></thead>
+            <tbody>
+              {% for d in drivers %}
+              <tr>
+                <td>{{ pos_badge(d.position) }}</td>
+                <td><a href="{{ url_for('drivers.profile', driver_id=d.driver_id) }}" class="fw-semibold">{{ d.first_name }} {{ d.last_name }}</a></td>
+                <td class="text-muted">{{ d.team or '—' }}</td>
+                <td class="text-end">{{ d.wins }}</td>
+                <td class="text-end">{{ d.podiums }}</td>
+                <td class="text-end fw-bold">{{ '%g'|format(d.points) }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6" class="text-center text-muted py-4">No data.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Constructors' Championship -->
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-people-fill"></i> Constructors' Championship — {{ season.year }}</div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>#</th><th>Team</th><th class="text-end">Wins</th><th class="text-end">Points</th></tr></thead>
+            <tbody>
+              {% for c in constructors %}
+              <tr>
+                <td>{{ pos_badge(c.position) }}</td>
+                <td class="fw-semibold">{{ c.name }}{% if c.nationality %} <span class="small text-muted fw-normal">· {{ c.nationality }}</span>{% endif %}</td>
+                <td class="text-end">{{ c.wins }}</td>
+                <td class="text-end fw-bold">{{ '%g'|format(c.points) }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-center text-muted py-4">No data.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
