@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Race Calendar{% endblock %}
+
+{% block content %}
+<div class="page-title"><h1><i class="bi bi-calendar-event text-f1"></i> Race Calendar</h1></div>
+
+{% if next_race %}
+<div class="card mb-4">
+  <div class="card-body text-center py-4">
+    <div class="text-muted small text-uppercase">Next Race</div>
+    <h2 class="fw-bold my-2">{{ next_race.name }}</h2>
+    <div class="text-muted mb-3">
+      <i class="bi bi-geo-alt"></i> {{ next_race.circuit }}{% if next_race.country %}, {{ next_race.country }}{% endif %}
+      · {{ next_race.race_date.strftime('%d.%m.%Y') }}{% if next_race.race_time %} {{ next_race.race_time.strftime('%H:%M') }} UTC{% endif %}
+    </div>
+    <div class="d-flex justify-content-center gap-2 gap-md-3 flex-wrap" id="countdown">
+      <div class="countdown-box"><div class="num" id="cd-days">--</div><div class="lbl">Days</div></div>
+      <div class="countdown-box"><div class="num" id="cd-hours">--</div><div class="lbl">Hours</div></div>
+      <div class="countdown-box"><div class="num" id="cd-mins">--</div><div class="lbl">Minutes</div></div>
+      <div class="countdown-box"><div class="num" id="cd-secs">--</div><div class="lbl">Seconds</div></div>
+    </div>
+    <div id="cd-done" class="h4 text-f1 mt-3 d-none">🏁 Race has started / finished!</div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">Upcoming Races</div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Round</th><th>Race</th><th>Circuit</th><th>Country</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for r in upcoming %}
+          <tr>
+            <td><span class="badge bg-secondary">{{ r.year }} · {{ r.round }}</span></td>
+            <td class="fw-semibold"><a href="{{ url_for('races.detail', race_id=r.race_id) }}">{{ r.name }}</a></td>
+            <td class="text-muted">{{ r.circuit }}</td>
+            <td>{{ r.country or '—' }}</td>
+            <td>{{ r.race_date.strftime('%d.%m.%Y') }}{% if r.race_time %} · {{ r.race_time.strftime('%H:%M') }} UTC{% endif %}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No upcoming races.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if next_iso %}
+<script>
+// Target date (ISO) -> live countdown
+const target = new Date("{{ next_iso }}").getTime();
+const pad = n => String(n).padStart(2, '0');
+function tick() {
+  const diff = target - Date.now();
+  if (diff <= 0) {
+    document.getElementById('countdown').classList.add('d-none');
+    document.getElementById('cd-done').classList.remove('d-none');
+    clearInterval(timer);
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-days').textContent  = d;
+  document.getElementById('cd-hours').textContent = pad(h);
+  document.getElementById('cd-mins').textContent  = pad(m);
+  document.getElementById('cd-secs').textContent  = pad(s);
+}
+tick();
+const timer = setInterval(tick, 1000);
+</script>
+{% endif %}
+{% endblock %}
