@@ -29,10 +29,12 @@ def create_app():
     from routes.drivers import bp as drivers_bp
     from routes.races import bp as races_bp
     from routes.compare import bp as compare_bp
+    from routes.analytics import bp as analytics_bp
     app.register_blueprint(standings_bp)
     app.register_blueprint(drivers_bp)
     app.register_blueprint(races_bp)
     app.register_blueprint(compare_bp)
+    app.register_blueprint(analytics_bp)
 
 
     # Every POST request must carry the session's anti-CSRF token

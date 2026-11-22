@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Race Analytics{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+  <div class="page-title"><h1><i class="bi bi-graph-up text-f1"></i> Race Analytics</h1></div>
+  <form method="get" class="d-flex align-items-center gap-2">
+    <label class="text-muted small mb-0">Season:</label>
+    <select name="season" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+      {% for s in seasons %}<option value="{{ s.season_id }}" {% if season and s.season_id==season.season_id %}selected{% endif %}>{{ s.year }}</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="row g-4">
+  <!-- Grid effect -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">Grid Effect — Start vs Finish Position</div>
+      <div class="card-body">
+        <p class="small text-muted">Points near the diagonal indicate drivers who held position; points above it indicate positions gained (overtaking).</p>
+        <div class="chart-wrap"><canvas id="gridChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pit stops -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">Pit Stops — Total per Race and Average per Driver</div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas id="pitChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fastest laps -->
+<div class="card mt-4">
+  <div class="card-header"><i class="bi bi-stopwatch text-f1"></i> Fastest Laps</div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Round</th><th>Race</th><th>Driver</th><th>Team</th><th>Lap Time</th></tr></thead>
+        <tbody>
+          {% for f in fastest %}
+          <tr>
+            <td><span class="badge bg-secondary">{{ f.round }}</span></td>
+            <td class="fw-semibold">{{ f.race }}</td>
+            <td>{{ f.first_name }} {{ f.last_name }}</td>
+            <td class="text-muted">{{ f.team or '—' }}</td>
+            <td><span class="badge badge-fl">{{ f.fastest_lap_time or '—' }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No fastest-lap data.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const gridPoints = {{ grid_points|tojson }};
+new Chart(document.getElementById('gridChart'), {
+  type: 'scatter',
+  data: { datasets: [{ label: 'Driver result', data: gridPoints,
+    backgroundColor: 'rgba(225,6,0,0.6)', pointRadius: 4 }] },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#e8e8ea' } },
+      tooltip: { callbacks: { label: c => `Grid P${c.parsed.x} → Finish P${c.parsed.y}` } } },
+    scales: {
+      x: { title: { display: true, text: 'Start (grid)', color: '#9a9aa8' }, min: 1,
+           ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' } },
+      y: { title: { display: true, text: 'Finish position', color: '#9a9aa8' }, min: 1, reverse: true,
+           ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' } }
+    }
+  }
+});
+
+const pitLabels = {{ pit_labels|tojson }};
+new Chart(document.getElementById('pitChart'), {
+  data: {
+    labels: pitLabels,
+    datasets: [
+      { type: 'bar', label: 'Total Pit Stops', data: {{ pit_totals|tojson }},
+        backgroundColor: 'rgba(56,189,248,0.6)', yAxisID: 'y' },
+      { type: 'line', label: 'Avg per Driver', data: {{ pit_avgs|tojson }},
+        borderColor: '#e10600', backgroundColor: '#e10600', tension: .25, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#e8e8ea' } } },
+    scales: {
+      x: { ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' } },
+      y:  { position: 'left',  ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' }, title: { display: true, text: 'Total', color: '#9a9aa8' } },
+      y1: { position: 'right', ticks: { color: '#9a9aa8' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Average', color: '#9a9aa8' } }
+    }
+  }
+});
+</script>
+{% endblock %}
