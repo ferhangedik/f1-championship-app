@@ -29,6 +29,13 @@
                 <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='standings' }}" href="{{ url_for('standings.index') }}"><i class="bi bi-trophy"></i> Standings</a></li>
                 <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='races' }}" href="{{ url_for('races.index') }}"><i class="bi bi-flag"></i> Races</a></li>  
         <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='drivers' }}" href="{{ url_for('drivers.index') }}"><i class="bi bi-person"></i> Drivers</a></li>
+                <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {{ 'active' if request.blueprint=='compare' }}" href="#" role="button" data-bs-toggle="dropdown"><i class="bi bi-people"></i> Compare</a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="{{ url_for('compare.index') }}">Driver vs Driver</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('compare.teammates') }}">Teammates</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>

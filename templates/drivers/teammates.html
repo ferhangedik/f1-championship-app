@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Teammate Comparison{% endblock %}
+
+{% block content %}
+<div class="page-title"><h1><i class="bi bi-people text-f1"></i> Teammate Comparison</h1></div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small">Season</label>
+        <select name="season" class="form-select" onchange="this.form.submit()">
+          {% for s in seasons %}<option value="{{ s.season_id }}" {% if season and s.season_id==season.season_id %}selected{% endif %}>{{ s.year }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small">Team</label>
+        <select name="team" class="form-select">
+          {% for t in teams %}<option value="{{ t.team_id }}" {% if team_id==t.team_id %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><button class="btn btn-f1 w-100">Show</button></div>
+    </form>
+  </div>
+</div>
+
+{% if data %}
+<h4 class="mb-3">{{ data.team_name }} — {{ season.year }}</h4>
+
+<!-- Head-to-head summary -->
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row text-center align-items-center">
+      <div class="col-4 text-end"><span class="h4 text-f1 fw-bold">{{ data.name1 }}</span></div>
+      <div class="col-4 text-muted text-uppercase small">Head-to-head</div>
+      <div class="col-4 text-start"><span class="h4 fw-bold" style="color:#38bdf8">{{ data.name2 }}</span></div>
+    </div>
+    <div class="row text-center align-items-center mt-2">
+      <div class="col-4 text-end h3 fw-bold">{{ data.race_h2h[0] }}</div>
+      <div class="col-4 text-muted">Races (finished ahead)</div>
+      <div class="col-4 text-start h3 fw-bold">{{ data.race_h2h[1] }}</div>
+    </div>
+    <div class="row text-center align-items-center">
+      <div class="col-4 text-end h3 fw-bold">{{ data.quali_h2h[0] }}</div>
+      <div class="col-4 text-muted">Qualifying (started ahead)</div>
+      <div class="col-4 text-start h3 fw-bold">{{ data.quali_h2h[1] }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  {% for nm, st, col in [(data.name1, data.stats1, 'var(--f1-red)'), (data.name2, data.stats2, '#38bdf8')] %}
+  <div class="col-md-6">
+    <div class="card stat-card" style="border-left-color:{{ col }}"><div class="card-body">
+      <h5 style="color:{{ col }}">{{ nm }}</h5>
+      <div class="row text-center">
+        <div class="col"><div class="stat-value">{{ '%g'|format(st.points) }}</div><div class="stat-label">Points</div></div>
+        <div class="col"><div class="stat-value">{{ st.wins }}</div><div class="stat-label">Wins</div></div>
+        <div class="col"><div class="stat-value">{{ st.podiums }}</div><div class="stat-label">Podiums</div></div>
+        <div class="col"><div class="stat-value">{{ st.avg_finish if st.avg_finish is not none else '—' }}</div><div class="stat-label">Avg Finish</div></div>
+      </div>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <div class="card-header">Points per Round</div>
+  <div class="card-body"><div class="chart-wrap"><canvas id="tmChart"></canvas></div></div>
+</div>
+{% elif teams %}
+<div class="alert alert-warning">Could not find two drivers for this team in this season. Choose a different team/season.</div>
+{% else %}
+<div class="alert alert-secondary">Select a season and a team.</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if data %}
+<script>
+new Chart(document.getElementById('tmChart'), {
+  type: 'bar',
+  data: { labels: {{ data.labels|tojson }}, datasets: [
+    { label: {{ data.name1|tojson }}, data: {{ data.pts1|tojson }}, backgroundColor: 'rgba(225,6,0,0.7)' },
+    { label: {{ data.name2|tojson }}, data: {{ data.pts2|tojson }}, backgroundColor: 'rgba(56,189,248,0.7)' }
+  ]},
+  options: { responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{ color:'#e8e8ea' } } },
+    scales:{ x:{ ticks:{ color:'#9a9aa8' }, grid:{ color:'#2c2c3a' } },
+             y:{ ticks:{ color:'#9a9aa8' }, grid:{ color:'#2c2c3a' } } } }
+});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Driver Comparison{% endblock %}
+
+{% block content %}
+<div class="page-title"><h1><i class="bi bi-people text-f1"></i> Driver Comparison</h1></div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small">Driver 1</label>
+        <select name="driver1" class="form-select" required>
+          <option value="">Select...</option>
+          {% for d in drivers %}<option value="{{ d.driver_id }}" {% if d1==d.driver_id %}selected{% endif %}>{{ d.first_name }} {{ d.last_name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small">Driver 2</label>
+        <select name="driver2" class="form-select" required>
+          <option value="">Select...</option>
+          {% for d in drivers %}<option value="{{ d.driver_id }}" {% if d2==d.driver_id %}selected{% endif %}>{{ d.first_name }} {{ d.last_name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Season</label>
+        <select name="season" class="form-select">
+          {% for s in seasons %}<option value="{{ s.season_id }}" {% if season and s.season_id==season.season_id %}selected{% endif %}>{{ s.year }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><button class="btn btn-f1 w-100">Compare</button></div>
+    </form>
+  </div>
+</div>
+
+{% if data %}
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card stat-card"><div class="card-body">
+      <h5 class="text-f1">{{ data.name1 }}</h5>
+      <div class="row text-center">
+        <div class="col"><div class="stat-value">{{ data.stats1.wins }}</div><div class="stat-label">Wins</div></div>
+        <div class="col"><div class="stat-value">{{ data.stats1.podiums }}</div><div class="stat-label">Podiums</div></div>
+        <div class="col"><div class="stat-value">{{ '%g'|format(data.stats1.points) }}</div><div class="stat-label">Points</div></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card stat-card" style="border-left-color:#38bdf8"><div class="card-body">
+      <h5 style="color:#38bdf8">{{ data.name2 }}</h5>
+      <div class="row text-center">
+        <div class="col"><div class="stat-value">{{ data.stats2.wins }}</div><div class="stat-label">Wins</div></div>
+        <div class="col"><div class="stat-value">{{ data.stats2.podiums }}</div><div class="stat-label">Podiums</div></div>
+        <div class="col"><div class="stat-value">{{ '%g'|format(data.stats2.points) }}</div><div class="stat-label">Points</div></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card"><div class="card-header">Points per Round</div>
+      <div class="card-body"><div class="chart-wrap"><canvas id="pointsChart"></canvas></div></div></div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card"><div class="card-header">Finish Position (lower = better)</div>
+      <div class="card-body"><div class="chart-wrap"><canvas id="finishChart"></canvas></div></div></div>
+  </div>
+</div>
+{% elif d1 or d2 %}
+<div class="alert alert-warning">Please select two drivers and a season.</div>
+{% else %}
+<div class="alert alert-secondary">Select two drivers to start comparing.</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if data %}
+<script>
+const labels = {{ data.labels|tojson }};
+const cfgAxes = (invert, title) => ({
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#e8e8ea' } } },
+  scales: {
+    x: { ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' } },
+    y: { reverse: invert, ticks: { color: '#9a9aa8' }, grid: { color: '#2c2c3a' },
+         title: { display: true, text: title, color: '#9a9aa8' } }
+  }
+});
+const c1 = '#e10600', c2 = '#38bdf8';
+new Chart(document.getElementById('pointsChart'), {
+  type: 'line',
+  data: { labels: labels, datasets: [
+    { label: {{ data.name1|tojson }}, data: {{ data.points1|tojson }}, borderColor: c1, backgroundColor: c1, tension: .25 },
+    { label: {{ data.name2|tojson }}, data: {{ data.points2|tojson }}, borderColor: c2, backgroundColor: c2, tension: .25 }
+  ]},
+  options: cfgAxes(false, 'Points')
+});
+new Chart(document.getElementById('finishChart'), {
+  type: 'line',
+  data: { labels: labels, datasets: [
+    { label: {{ data.name1|tojson }}, data: {{ data.finish1|tojson }}, borderColor: c1, backgroundColor: c1, spanGaps: true, tension: .2 },
+    { label: {{ data.name2|tojson }}, data: {{ data.finish2|tojson }}, borderColor: c2, backgroundColor: c2, spanGaps: true, tension: .2 }
+  ]},
+  options: cfgAxes(true, 'Finish position')
+});
+</script>
+{% endif %}
+{% endblock %}
