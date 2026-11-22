@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Races{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+  <div class="page-title"><h1><i class="bi bi-flag text-f1"></i> Races</h1></div>
+  <form method="get" class="d-flex align-items-center gap-2">
+    <label class="text-muted small mb-0">Season:</label>
+    <select name="season" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+      {% for s in seasons %}
+        <option value="{{ s.season_id }}" {% if season and s.season_id==season.season_id %}selected{% endif %}>{{ s.year }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Round</th><th>Race</th><th>Circuit</th><th>Country</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+          {% for r in races %}
+          <tr>
+            <td><span class="badge bg-secondary">{{ r.round }}</span></td>
+            <td class="fw-semibold">
+              <a href="{{ url_for('races.detail', race_id=r.race_id) }}">{{ r.name }}</a>
+              {% if r.is_upcoming %}<span class="badge bg-info text-dark ms-1">Upcoming</span>{% endif %}
+            </td>
+            <td class="text-muted">{{ r.circuit }}</td>
+            <td>{{ r.country or '—' }}</td>
+            <td>{{ r.race_date.strftime('%d.%m.%Y') }}</td>
+            <td class="text-end">
+              <a href="{{ url_for('races.detail', race_id=r.race_id) }}" class="btn btn-sm btn-outline-f1">
+                Details <i class="bi bi-chevron-right"></i>
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-4">No races for this season.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
