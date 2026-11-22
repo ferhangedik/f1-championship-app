@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="card mb-4" style="background:linear-gradient(135deg,#1f1f2b,#2a0a0a);">
+  <div class="card-body py-4">
+    <div class="row align-items-center g-3">
+      <div class="col-lg-7">
+        <h1 class="fw-bold mb-1"><span class="f1-logo">F1</span> Championship Data Analysis</h1>
+        <p class="text-muted mb-3">Standings, race analytics and driver comparisons from real Formula 1 data.
+          {% if season %}Current season: <span class="text-f1 fw-semibold">{{ season.year }}</span>.{% endif %}</p>
+        <a href="{{ url_for('standings.index') }}" class="btn btn-f1"><i class="bi bi-trophy"></i> Standings</a>
+        <a href="{{ url_for('analytics.index') }}" class="btn btn-outline-f1"><i class="bi bi-graph-up"></i> Analytics</a>
+      </div>
+      <div class="col-lg-5">
+        {% if next_race %}
+        <div class="text-center">
+          <div class="text-muted small text-uppercase">Next Race</div>
+          <div class="h4 fw-bold mb-2">{{ next_race.name }}</div>
+          <div class="d-flex justify-content-center gap-2" id="countdown">
+            <div class="countdown-box"><div class="num" id="cd-days">--</div><div class="lbl">Days</div></div>
+            <div class="countdown-box"><div class="num" id="cd-hours">--</div><div class="lbl">Hrs</div></div>
+            <div class="countdown-box"><div class="num" id="cd-mins">--</div><div class="lbl">Min</div></div>
+            <div class="countdown-box"><div class="num" id="cd-secs">--</div><div class="lbl">Sec</div></div>
+          </div>
+          <div id="cd-done" class="h5 text-f1 mt-2 d-none">🏁 Race weekend is here!</div>
+        </div>
+        {% else %}
+        <div class="text-center text-muted">No upcoming race.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Season statistic cards -->
+{% if stats %}
+<div class="row g-3 mb-4">
+  {% set cards = [('Completed Races', stats.completed, 'bi-flag-fill'),
+                  ('Season Races', stats.total_races, 'bi-calendar3'),
+                  ('Drivers Raced', stats.drivers, 'bi-person-fill'),
+                  ('Reviews', stats.reviews, 'bi-star-fill')] %}
+  {% for label, val, icon in cards %}
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card h-100"><div class="card-body d-flex justify-content-between align-items-center">
+      <div><div class="stat-value">{{ val }}</div><div class="stat-label">{{ label }}</div></div>
+      <i class="bi {{ icon }}" style="font-size:1.8rem;color:var(--f1-border)"></i>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Championship leaders -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-trophy text-f1"></i> {{ season.year if season }} Championship Leaders</div>
+      <div class="card-body">
+        {% if driver_leader %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="text-muted small">Driver</div>
+            <a href="{{ url_for('drivers.profile', driver_id=driver_leader.driver_id) }}" class="h5 fw-bold d-block mb-0">
+              {{ driver_leader.first_name }} {{ driver_leader.last_name }}</a>
+            <div class="text-muted small">{{ driver_leader.team or '—' }} · {{ driver_leader.wins }} wins</div>
+          </div>
+          <div class="text-end"><div class="display-6 fw-bold text-f1">{{ '%g'|format(driver_leader.points) }}</div><div class="stat-label">pts</div></div>
+        </div>
+        {% endif %}
+        {% if team_leader %}
+        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color:var(--f1-border)!important">
+          <div><div class="text-muted small">Team</div><div class="h5 fw-bold mb-0">{{ team_leader.name }}</div></div>
+          <div class="text-end"><div class="display-6 fw-bold">{{ '%g'|format(team_leader.points) }}</div><div class="stat-label">pts</div></div>
+        </div>
+        {% endif %}
+        <a href="{{ url_for('standings.index') }}?season={{ season.season_id }}" class="btn btn-sm btn-outline-f1 mt-3">Full standings</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Last race podium -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-flag text-f1"></i> Last Race</div>
+      <div class="card-body">
+        {% if last_race %}
+        <h5 class="fw-bold mb-1"><a href="{{ url_for('races.detail', race_id=last_race.race_id) }}">{{ last_race.name }}</a></h5>
+        <div class="text-muted small mb-3">Round {{ last_race.round }} · {{ last_race.country or '' }} · {{ last_race.race_date.strftime('%d.%m.%Y') }}</div>
+        <table class="table table-sm align-middle mb-0">
+          <tbody>
+            {% for r in podium %}
+            <tr>
+              <td style="width:40px"><span class="pos-badge {% if r.finish_position==1 %}pos-1{% elif r.finish_position==2 %}pos-2{% else %}pos-3{% endif %}">{{ r.finish_position }}</span></td>
+              <td class="fw-semibold"><a href="{{ url_for('drivers.profile', driver_id=r.driver_id) }}">{{ r.first_name }} {{ r.last_name }}</a></td>
+              <td class="text-muted text-end">{{ r.team or '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">No completed race this season yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if next_iso %}
+<script>
+const target = new Date("{{ next_iso }}").getTime();
+const pad = n => String(n).padStart(2, '0');
+function tick() {
+  const diff = target - Date.now();
+  if (diff <= 0) {
+    document.getElementById('countdown').classList.add('d-none');
+    document.getElementById('cd-done').classList.remove('d-none');
+    clearInterval(timer); return;
+  }
+  document.getElementById('cd-days').textContent  = Math.floor(diff/86400000);
+  document.getElementById('cd-hours').textContent = pad(Math.floor((diff%86400000)/3600000));
+  document.getElementById('cd-mins').textContent  = pad(Math.floor((diff%3600000)/60000));
+  document.getElementById('cd-secs').textContent  = pad(Math.floor((diff%60000)/1000));
+}
+tick(); const timer = setInterval(tick, 1000);
+</script>
+{% endif %}
+{% endblock %}

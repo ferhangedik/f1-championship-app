@@ -18,7 +18,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark f1-navbar sticky-top">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="{{ url_for('drivers.index') }}">
+      <a class="navbar-brand fw-bold" href="{{ url_for('home.index') }}">
       <span class="f1-logo">F1</span> Analytics
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
@@ -26,6 +26,7 @@
     </button>
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link {{ 'active' if request.endpoint=='home.index' }}" href="{{ url_for('home.index') }}"><i class="bi bi-house"></i> Home</a></li>
                 <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='standings' }}" href="{{ url_for('standings.index') }}"><i class="bi bi-trophy"></i> Standings</a></li>
                 <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='races' }}" href="{{ url_for('races.index') }}"><i class="bi bi-flag"></i> Races</a></li>  
         <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='drivers' }}" href="{{ url_for('drivers.index') }}"><i class="bi bi-person"></i> Drivers</a></li>
@@ -39,6 +40,11 @@
                 <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='analytics' }}" href="{{ url_for('analytics.index') }}"><i class="bi bi-graph-up"></i> Analytics</a></li>
                 <li class="nav-item"><a class="nav-link {{ 'active' if request.blueprint=='calendar' }}" href="{{ url_for('calendar.index') }}"><i class="bi bi-calendar-event"></i> Calendar</a></li>
       </ul>
+            <form class="d-flex me-lg-2 my-2 my-lg-0" role="search" action="{{ url_for('home.search') }}" method="get">
+        <input class="form-control form-control-sm" type="search" name="q" placeholder="Search drivers / races..."
+               value="{{ request.args.get('q','') }}" style="max-width:170px">
+        <button class="btn btn-sm btn-outline-f1 ms-1" type="submit"><i class="bi bi-search"></i></button>
+      </form>
     </div>
   </div>
 </nav>
