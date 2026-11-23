@@ -1,0 +1,5 @@
+# Extra dependencies for production (Linux VPS).
+# First install the normal dependencies:  pip install -r requirements.txt
+# Then these:                             pip install -r requirements-prod.txt
+
+gunicorn>=22.0     # Production WSGI server (wsgi:app)
