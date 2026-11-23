@@ -1,0 +1,72 @@
+{
+  "queries": [
+    {
+      "query": "Driver standings (hfg_fn_driver_standings)",
+      "planning_ms": 0.922,
+      "execution_ms": 1.378,
+      "rows": 21.0
+    },
+    {
+      "query": "Constructor standings (hfg_fn_constructor_standings)",
+      "planning_ms": 0.535,
+      "execution_ms": 0.785,
+      "rows": 10.0
+    },
+    {
+      "query": "Race detail: results of one race",
+      "planning_ms": 0.133,
+      "execution_ms": 0.065,
+      "rows": 20.0
+    },
+    {
+      "query": "Driver profile: cumulative points (window function)",
+      "planning_ms": 0.177,
+      "execution_ms": 0.281,
+      "rows": 24.0
+    },
+    {
+      "query": "Search (ILIKE on drivers)",
+      "planning_ms": 0.031,
+      "execution_ms": 0.023,
+      "rows": 1.0
+    },
+    {
+      "query": "Dashboard: season statistics (scalar sub-queries)",
+      "planning_ms": 0.21,
+      "execution_ms": 0.273,
+      "rows": 1.0
+    }
+  ],
+  "pages": [
+    {
+      "url": "/",
+      "median_ms": 74.9,
+      "max_ms": 177.7
+    },
+    {
+      "url": "/standings/",
+      "median_ms": 56.8,
+      "max_ms": 64.8
+    },
+    {
+      "url": "/races/1",
+      "median_ms": 69.8,
+      "max_ms": 170.6
+    },
+    {
+      "url": "/drivers/2",
+      "median_ms": 65.4,
+      "max_ms": 165.9
+    },
+    {
+      "url": "/compare/teammates",
+      "median_ms": 64.9,
+      "max_ms": 172.7
+    },
+    {
+      "url": "/analytics/",
+      "median_ms": 61.6,
+      "max_ms": 69.9
+    }
+  ]
+}

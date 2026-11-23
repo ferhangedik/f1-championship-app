@@ -1,0 +1,298 @@
+[
+  {
+    "id": "T01",
+    "area": "Pages",
+    "description": "All 13 public pages respond",
+    "expected": "HTTP 200 for every page",
+    "actual": "all 200",
+    "passed": true
+  },
+  {
+    "id": "T02",
+    "area": "Pages",
+    "description": "Unknown URL",
+    "expected": "HTTP 404, themed error page",
+    "actual": "HTTP 404",
+    "passed": true
+  },
+  {
+    "id": "T03",
+    "area": "Pages",
+    "description": "Race id that does not exist",
+    "expected": "HTTP 404",
+    "actual": "HTTP 404",
+    "passed": true
+  },
+  {
+    "id": "T04",
+    "area": "Authorisation",
+    "description": "Anonymous visitor opens /admin/",
+    "expected": "Redirect to login",
+    "actual": "HTTP 302 -> /auth/login?next=/admin/",
+    "passed": true
+  },
+  {
+    "id": "T05",
+    "area": "Registration",
+    "description": "Username of 2 characters, password of 1",
+    "expected": "Rejected with message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T06",
+    "area": "Registration",
+    "description": "Username that already exists",
+    "expected": "Rejected: name taken",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T07",
+    "area": "Registration",
+    "description": "Valid registration",
+    "expected": "Account stored with a salted hash",
+    "actual": "stored, scrypt hash",
+    "passed": true
+  },
+  {
+    "id": "T08",
+    "area": "Authentication",
+    "description": "Log in with a wrong password",
+    "expected": "Rejected, generic message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T09",
+    "area": "Authentication",
+    "description": "Log in with an external ?next= target",
+    "expected": "Logged in, redirected inside the site only",
+    "actual": "-> /standings/",
+    "passed": true
+  },
+  {
+    "id": "T10",
+    "area": "Authorisation",
+    "description": "Member (not admin) opens /admin/",
+    "expected": "Access refused",
+    "actual": "refused",
+    "passed": true
+  },
+  {
+    "id": "T11",
+    "area": "Reviews",
+    "description": "Review of a race not yet held",
+    "expected": "Rejected by trigger",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T12",
+    "area": "Reviews",
+    "description": "Rating 0",
+    "expected": "Rejected by procedure",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T13",
+    "area": "Reviews",
+    "description": "Rating 11",
+    "expected": "Rejected by procedure",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T14",
+    "area": "Reviews",
+    "description": "Valid review, then resubmitted",
+    "expected": "One review, updated to the new rating",
+    "actual": "1 review(s), rating 7",
+    "passed": true
+  },
+  {
+    "id": "T15",
+    "area": "Reviews",
+    "description": "Member deletes another user's review",
+    "expected": "Refused by procedure",
+    "actual": "refused",
+    "passed": true
+  },
+  {
+    "id": "T16",
+    "area": "Reviews",
+    "description": "Member deletes own review",
+    "expected": "Review removed",
+    "actual": "removed",
+    "passed": true
+  },
+  {
+    "id": "T17",
+    "area": "Admin CRUD",
+    "description": "Empty first name",
+    "expected": "Rejected with message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T18",
+    "area": "Admin CRUD",
+    "description": "Date of birth in the future",
+    "expected": "Rejected with message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T19",
+    "area": "Admin CRUD",
+    "description": "Malformed date of birth",
+    "expected": "Rejected with message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T20",
+    "area": "Admin CRUD",
+    "description": "Create, edit and delete a driver",
+    "expected": "Three audit rows by 'admin'",
+    "actual": "INSERT, UPDATE, DELETE",
+    "passed": true
+  },
+  {
+    "id": "T21",
+    "area": "Admin CRUD",
+    "description": "Delete a driver that no longer exists",
+    "expected": "Rejected with message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T22",
+    "area": "Security",
+    "description": "POST without the anti-CSRF token (forged request)",
+    "expected": "Rejected with HTTP 400, nothing stored",
+    "actual": "HTTP 400, stored: False",
+    "passed": true
+  },
+  {
+    "id": "T23",
+    "area": "Security",
+    "description": "SQL injection string in search",
+    "expected": "Treated as text, no damage",
+    "actual": "HTTP 200, drivers 26 -> 26",
+    "passed": true
+  },
+  {
+    "id": "T24",
+    "area": "Database",
+    "description": "CHECK: review rating 11",
+    "expected": "Rejected (CheckViolation)",
+    "actual": "CheckViolation",
+    "passed": true
+  },
+  {
+    "id": "T25",
+    "area": "Database",
+    "description": "UNIQUE: second result for the same driver and race",
+    "expected": "Rejected (UniqueViolation)",
+    "actual": "UniqueViolation",
+    "passed": true
+  },
+  {
+    "id": "T26",
+    "area": "Database",
+    "description": "FOREIGN KEY: result for a race that does not exist",
+    "expected": "Rejected (ForeignKeyViolation)",
+    "actual": "ForeignKeyViolation",
+    "passed": true
+  },
+  {
+    "id": "T27",
+    "area": "Database",
+    "description": "Trigger: first result of an upcoming race",
+    "expected": "Race marked as completed",
+    "actual": "is_upcoming = False",
+    "passed": true
+  },
+  {
+    "id": "T28",
+    "area": "Database",
+    "description": "Trigger: result for a new team in the latest race",
+    "expected": "Driver's current team updated",
+    "actual": "updated",
+    "passed": true
+  },
+  {
+    "id": "T29",
+    "area": "Correctness",
+    "description": "2025 driver standings vs official (after round 24)",
+    "expected": "Points and wins equal for every driver",
+    "actual": "21/21 drivers equal",
+    "passed": true
+  },
+  {
+    "id": "T30",
+    "area": "Correctness",
+    "description": "2026 driver standings vs official (after round 20)",
+    "expected": "Points and wins equal for every driver",
+    "actual": "25/25 drivers equal",
+    "passed": true
+  },
+  {
+    "id": "T31",
+    "area": "Registration",
+    "description": "Password of 7 characters",
+    "expected": "Rejected with message",
+    "actual": "rejected",
+    "passed": true
+  },
+  {
+    "id": "T32",
+    "area": "Database",
+    "description": "RESTRICT: delete a team that has results",
+    "expected": "Rejected (RestrictViolation)",
+    "actual": "RestrictViolation",
+    "passed": true
+  },
+  {
+    "id": "T33",
+    "area": "Database",
+    "description": "RESTRICT: delete a driver who has results",
+    "expected": "Rejected (RestrictViolation)",
+    "actual": "RestrictViolation",
+    "passed": true
+  },
+  {
+    "id": "T34",
+    "area": "Database",
+    "description": "RESTRICT: delete a circuit that has races",
+    "expected": "Rejected (RestrictViolation)",
+    "actual": "RestrictViolation",
+    "passed": true
+  },
+  {
+    "id": "T35",
+    "area": "Database",
+    "description": "UNIQUE: second team with the same name",
+    "expected": "Rejected (UniqueViolation)",
+    "actual": "UniqueViolation",
+    "passed": true
+  },
+  {
+    "id": "T36",
+    "area": "Database",
+    "description": "UNIQUE: second circuit with the same name",
+    "expected": "Rejected (UniqueViolation)",
+    "actual": "UniqueViolation",
+    "passed": true
+  },
+  {
+    "id": "T37",
+    "area": "Database",
+    "description": "DEFERRED UNIQUE: two races with the same round in a season",
+    "expected": "Rejected when the transaction commits",
+    "actual": "UniqueViolation at COMMIT",
+    "passed": true
+  }
+]
