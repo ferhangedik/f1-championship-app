@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Driver Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="page-title mb-0"><h1><i class="bi bi-person-gear text-f1"></i> Driver Management</h1></div>
+  <a href="{{ url_for('admin.driver_new') }}" class="btn btn-f1"><i class="bi bi-plus-lg"></i> New Driver</a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Nationality</th><th>Team</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for d in drivers %}
+          <tr>
+            <td class="text-muted">{{ d.driver_id }}</td>
+            <td>{{ d.first_name }}</td>
+            <td class="fw-semibold">{{ d.last_name }}</td>
+            <td>{{ d.nationality or '—' }}</td>
+            <td class="text-muted">{{ d.team or '—' }}</td>
+            <td class="text-end">
+              <a href="{{ url_for('admin.driver_edit', driver_id=d.driver_id) }}" class="btn btn-sm btn-outline-light"><i class="bi bi-pencil"></i></a>
+              <form method="post" action="{{ url_for('admin.driver_delete', driver_id=d.driver_id) }}" class="d-inline"
+                    onsubmit="return confirm('Delete this driver? Drivers who have race results cannot be deleted.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-4">No drivers.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

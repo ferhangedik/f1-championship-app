@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-title"><h1><i class="bi bi-gear-fill text-f1"></i> Admin Panel</h1></div>
+
+<div class="row g-3 mb-4">
+  {% set items = [
+    ('Drivers', stats.drivers, 'bi-person'),
+    ('Teams', stats.teams, 'bi-people'),
+    ('Races', stats.races, 'bi-flag'),
+    ('Circuits', stats.circuits, 'bi-geo-alt'),
+    ('Users', stats.users, 'bi-person-badge'),
+    ('Results', stats.results, 'bi-list-ol'),
+    ('Reviews', stats.reviews, 'bi-star')
+  ] %}
+  {% for label, val, icon in items %}
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="card stat-card h-100"><div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="stat-value">{{ val }}</div>
+          <div class="stat-label">{{ label }}</div>
+        </div>
+        <i class="bi {{ icon }}" style="font-size:1.8rem;color:var(--f1-border)"></i>
+      </div>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <div class="card-header">Management</div>
+  <div class="card-body">
+    <a href="{{ url_for('admin.drivers') }}" class="btn btn-f1"><i class="bi bi-person-gear"></i> Driver Management (CRUD)</a>
+    <p class="text-muted small mt-2 mb-0">You can add, edit or delete drivers. A driver who has race results cannot be deleted.</p>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">Driver Change Log <span class="text-muted small">(recorded by a database trigger)</span></div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>When</th><th>Operation</th><th>Driver</th><th>By</th></tr></thead>
+      <tbody>
+        {% for a in audit %}
+        <tr>
+          <td class="text-muted small">{{ a.changed_at.strftime('%d.%m.%Y %H:%M') }}</td>
+          <td><span class="badge {% if a.operation=='DELETE' %}bg-danger{% elif a.operation=='INSERT' %}bg-success{% else %}bg-secondary{% endif %}">{{ a.operation }}</span></td>
+          <td>{{ a.first_name }} {{ a.last_name }}</td>
+          <td class="text-muted">{{ a.changed_by }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3">No changes recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
