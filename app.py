@@ -33,6 +33,7 @@ def create_app():
     from routes.calendar import bp as calendar_bp
     from routes.home import bp as home_bp
     from routes.auth import bp as auth_bp
+    from routes.reviews import bp as reviews_bp
     app.register_blueprint(standings_bp)
     app.register_blueprint(drivers_bp)
     app.register_blueprint(races_bp)
@@ -41,6 +42,7 @@ def create_app():
     app.register_blueprint(calendar_bp)
     app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(reviews_bp)
 
 
     # Every POST request must carry the session's anti-CSRF token

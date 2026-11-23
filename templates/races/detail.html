@@ -21,6 +21,11 @@
         </div>
         <div class="mt-1"><i class="bi bi-calendar-event"></i> {{ race.race_date.strftime('%d.%m.%Y') }}{% if race.race_time %} {{ race.race_time.strftime('%H:%M') }} UTC{% endif %}</div>
       </div>
+            <div class="text-center">
+        <div class="stat-label">Average Rating</div>
+        <div class="display-5 fw-bold text-f1">{{ stats.avg_rating if stats.avg_rating is not none else '—' }}</div>
+        <div class="small text-muted">{{ stats.cnt }} reviews</div>
+      </div>
     </div>
   </div>
 </div>
@@ -37,6 +42,7 @@
   {% endif %}
   <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-quali">Qualifying</button></li>
   <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-pits">Pit Stops</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-reviews">Reviews ({{ stats.cnt }})</button></li>
 </ul>
 
 <div class="tab-content card border-top-0" style="border-radius:0 0 10px 10px">
@@ -131,6 +137,67 @@
       </table>
     </div>
   </div>
+  <!-- REVIEWS -->
+  <div class="tab-pane fade p-3" id="tab-reviews">
+    <a id="reviews"></a>
+    {% if race.is_upcoming %}
+    <div class="alert alert-secondary">Reviews open once the race has taken place.</div>
+    {% elif current_user %}
+    <div class="card mb-4">
+      <div class="card-header">{{ 'Update Your Review' if my_review else 'Rate This Race' }}</div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('reviews.save', race_id=race.race_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="row g-3 align-items-end">
+            <div class="col-auto">
+              <label class="form-label small">Rating (1-10)</label>
+              <select name="rating" class="form-select">
+                {% for i in range(1, 11) %}
+                  <option value="{{ i }}" {% if my_review and my_review.rating==i %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col">
+              <label class="form-label small">Comment</label>
+              <input type="text" name="comment" class="form-control" maxlength="500"
+                     value="{{ my_review.comment if my_review else '' }}" placeholder="Your thoughts about the race...">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-f1">{{ 'Update' if my_review else 'Submit' }}</button>
+            </div>
+          </div>
+        </form>
+        {% if my_review %}
+        <form method="post" action="{{ url_for('reviews.delete', review_id=my_review.review_id) }}" class="mt-2"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete My Review</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary">Please <a href="{{ url_for('auth.login') }}">log in</a> to leave a review.</div>
+    {% endif %}
 
+    {% for rv in reviews %}
+    <div class="card mb-2">
+      <div class="card-body py-2">
+        <div class="d-flex justify-content-between">
+          <div>
+            <span class="badge bg-f1 me-2">{{ rv.rating }}/10</span>
+            <strong>{{ rv.username }}</strong>
+            <span class="text-muted small ms-2">{{ rv.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+          </div>
+          {% if current_user and (current_user.user_id==rv.user_id or is_admin) %}
+          <form method="post" action="{{ url_for('reviews.delete', review_id=rv.review_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-link text-danger p-0"><i class="bi bi-trash"></i></button>
+          </form>
+          {% endif %}
+        </div>
+        {% if rv.comment %}<div class="mt-1">{{ rv.comment }}</div>{% endif %}
+      </div>
+    </div>
+    {% else %}
+    {% if not race.is_upcoming %}<p class="text-muted">No reviews yet. Be the first to review!</p>{% endif %}
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

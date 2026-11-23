@@ -1,7 +1,7 @@
 #routes/races.py — Race list and race detail pages.
-#The detail page has four sections: results, sprint (on sprint weekends), qualifying and pit stops.
+#The detail page has five sections: results, sprint (on sprint weekends), qualifying, pit stops and user reviews + average rating.
 
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, session
 import db
 from routes.common import resolve_season
 
@@ -73,6 +73,20 @@ WHERE p.race_id = %s
 ORDER BY d.last_name, p.stop_number;
 """
 
+RACE_REVIEWS = """
+SELECT rv.review_id, rv.rating, rv.comment, rv.created_at,
+       u.user_id, u.username
+FROM hfg_reviews rv
+JOIN hfg_users u ON u.user_id = rv.user_id
+WHERE rv.race_id = %s
+ORDER BY rv.created_at DESC;
+"""
+
+REVIEW_STATS = """
+SELECT COUNT(*) AS cnt, ROUND(AVG(rating), 1) AS avg_rating
+FROM hfg_reviews WHERE race_id = %s;
+"""
+
 @bp.route("/")
 def index():
     season, seasons = resolve_season()
@@ -91,9 +105,19 @@ def detail(race_id):
     sprint = db.query(RACE_SPRINT, (race_id,))
     qualifying = db.query(RACE_QUALIFYING, (race_id,))
     pit_stops = db.query(RACE_PITSTOPS, (race_id,))
+    reviews = db.query(RACE_REVIEWS, (race_id,))
+    stats = db.query(REVIEW_STATS, (race_id,), one=True)
+
+    # The logged-in user's own review (to pre-fill the form)
+    my_review = None
+    if session.get("user_id"):
+        my_review = db.query(
+            "SELECT review_id, rating, comment FROM hfg_reviews WHERE race_id=%s AND user_id=%s",
+            (race_id, session["user_id"]), one=True,
+        )
 
     return render_template(
         "races/detail.html",
         race=race, results=results, sprint=sprint, qualifying=qualifying,
-        pit_stops=pit_stops,
+        pit_stops=pit_stops, reviews=reviews, stats=stats, my_review=my_review,
     )
